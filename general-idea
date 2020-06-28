@@ -1,3 +1,0 @@
-General Idea!!!
-
-The general idea is to use Rust to calculate the position of the elements, size, shape for each tick and then read from memory with javascript these values and draw it in the canvas

@@ -1,53 +1,27 @@
-extern crate cfg_if;
-extern crate wasm_bindgen;
-extern crate web_sys;
-
-mod utils;
-
-use cfg_if::cfg_if;
+use std::f64;
 use wasm_bindgen::prelude::*;
+use wasm_bindgen::JsCast;
 
-cfg_if! {
-    // When the `wee_alloc` feature is enabled, use `wee_alloc` as the global
-    // allocator.
-    if #[cfg(feature = "wee_alloc")] {
-        extern crate wee_alloc;
-        #[global_allocator]
-        static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
-    }
+#[wasm_bindgen(start)]
+pub fn start() {
+    let document = web_sys::window().unwrap().document().unwrap();
+    let canvas = document.get_element_by_id("canvas").unwrap();
+    let canvas: web_sys::HtmlCanvasElement = canvas
+        .dyn_into::<web_sys::HtmlCanvasElement>()
+        .map_err(|_| ())
+        .unwrap();
+
+    let context = canvas
+        .get_context("2d")
+        .unwrap()
+        .unwrap()
+        .dyn_into::<web_sys::CanvasRenderingContext2d>()
+        .unwrap();
+
+    canvas.set_width(500);
+    canvas.set_height(500);
+    context.set_font("48px serif");
+    context.set_fill_style(&JsValue::from_str("#fff"));
+    context.stroke_text("Lorem Ipsum", 50_f64, 50_f64);
+    //context.set_fill_text("Lorem Ipsum", 50, 50);
 }
-
-#[wasm_bindgen]
-pub struct Text {
-    value: String,
-    x: u32,
-    y: u32,
-}
-
-#[wasm_bindgen]
-impl Text {
-    pub fn new() -> Text {
-        web_sys::console::log_1(&"running!".into());
-        let x = 0;
-        let y = 48;
-        let value = "Hi, My name is Marcell".to_string();
-        Text {
-            value,
-            x,
-            y
-        }
-    }
-
-    pub fn value(&self) -> String {
-        self.value.clone().into()
-    }
-
-    pub fn x(&self) -> u32 {
-        self.x 
-    }
-
-    pub fn y(&self) -> u32 {
-        self.y 
-    }
-}
-
