@@ -15,8 +15,10 @@ wasm-bindgen = "0.2.63"
 version = "0.3.4"
 features = [
   'CanvasRenderingContext2d',
+  'TextMetrics',
   'Document',
   'Element',
   'HtmlCanvasElement',
   'Window',
+  'console',
 ]
