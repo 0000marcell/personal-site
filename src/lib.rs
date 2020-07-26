@@ -1,43 +1,15 @@
 use std::f64;
 use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsCast;
-use tokio::time::{self, Duration};
-use std::future::Future;
+use std::thread;
+use std::time::Duration;
 
-fn set_interval<F, Fut>(mut f: F, dur: Duration)
-where
-    F: Send + 'static + FnMut() -> Fut,
-    Fut: Future<Output = ()> + Send + 'static,
-{
-    // Create stream of intervals.
-    let mut interval = time::interval(dur);
-    
-    tokio::spawn(async move {
-        // Skip the first tick at 0ms.
-        interval.tick().await;
-        loop {
-            // Wait until next tick:
-            interval.tick().await;
-            // Spawn a task for the operation.
-            tokio::spawn(f());
-        }
-    });
-}
 
 // A macro to provide `println!(..)`-style syntax for `console.log` logging.
-macro_rules! log {
+macro_rules! println {
     ( $( $t:tt )* ) => {
         web_sys::console::log_1(&format!( $( $t )* ).into());
     }
-}
-
-async fn run_tokio() {
-    log!("testing!!!");
-    set_interval(|| async {
-        log!("Hello world!");
-    }, Duration::from_millis(1000));
-    
-    time::delay_for(Duration::from_millis(6000)).await;
 }
 
 pub fn draw_text(text: &str, x: u32, y: u32, 
@@ -48,7 +20,6 @@ pub fn draw_text(text: &str, x: u32, y: u32,
 }
 
 #[wasm_bindgen(start)]
-#[tokio::main]
 pub fn start() {
     let window = web_sys::window().unwrap();
     let document = window.document().unwrap();
@@ -68,8 +39,6 @@ pub fn start() {
     let wv_width = window.inner_width().unwrap().as_f64().unwrap() as u32;
     let wv_height = window.inner_height().unwrap().as_f64().unwrap() as u32;
 
-    
-
     canvas.set_width(wv_width);
     canvas.set_height(wv_height);
     context.set_font("48px serif");
@@ -77,11 +46,15 @@ pub fn start() {
     let text = "Lorem Ipsum";
     let text_metrics = context.measure_text(text).unwrap();
 
-    run_tokio();
-
     let text_x = wv_width / 2 - text_metrics.width() as u32;
     let text_y = wv_height / 2;
     context.set_fill_style(&JsValue::from_str("#ffffff"));
     draw_text(text, text_x, text_y, &context, &canvas);
+    thread::sleep(Duration::from_millis(1000));
     draw_text("marcell", text_x, text_y, &context, &canvas);
+    for i in 1..5 {
+        println!("hi number {} from the main thread!", i);
+        thread::sleep(Duration::from_millis(1000));
+    }
+    println!(">>>>>>>>");
 }
