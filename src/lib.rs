@@ -1,16 +1,7 @@
-use std::f64;
 use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsCast;
-
-macro_rules! log {
-    ( $( $t:tt )* ) => {
-        web_sys::console::log_1(&format!( $( $t )* ).into());
-    }
-}
-
-pub fn draw_text(text: String, x: ) {
-    log!("{}", text);
-}
+mod log;
+mod canvas;
 
 #[wasm_bindgen(start)]
 pub fn start() {
@@ -44,8 +35,7 @@ pub fn start() {
     let text_x = wv_width / 2 - text_metrics.width() as u32;
     let text_y = wv_height / 2;
     context.set_fill_style(&JsValue::from_str("#ffffff"));
-    context.fill_text(text, text_x as f64, text_y as f64).unwrap();
-    
+    canvas::draw_text(text, text_x, text_y, context);
 
     // const vw = Math.max(document.documentElement.clientWidth || 0,  || 0);
     // const vh = Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0);
