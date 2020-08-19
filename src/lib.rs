@@ -3,6 +3,45 @@ use wasm_bindgen::JsCast;
 mod log;
 mod canvas;
 
+#[wasm_bindgen]
+extern "C" {
+    fn setInterval(closure: &Closure<dyn FnMut()>, time: u32) -> i32;
+    fn clearInterval(id: i32);
+
+    #[wasm_bindgen(js_namespace = console)]
+    fn log(s: &str);
+}
+
+
+
+#[wasm_bindgen]
+pub struct IntervalHandle {
+    interval_id: i32,
+    _closure: Closure<dyn FnMut()>,
+}
+
+impl Drop for IntervalHandle {
+    fn drop(&mut self) {
+        clearInterval(self.interval_id);
+    }
+}
+
+
+#[wasm_bindgen]
+pub fn run() -> IntervalHandle {
+
+    let cb = Closure::wrap(Box::new(|| {
+        log!("interval elapsed!");
+    }) as Box<dyn FnMut()>);
+
+    let interval_id = setInterval(&cb, 1_000);
+
+    IntervalHandle {
+        interval_id,
+        _closure: cb,
+    }
+}
+
 #[wasm_bindgen(start)]
 pub fn start() {
     let window = web_sys::window().unwrap();
@@ -23,7 +62,7 @@ pub fn start() {
     let wv_width = window.inner_width().unwrap().as_f64().unwrap() as u32;
     let wv_height = window.inner_height().unwrap().as_f64().unwrap() as u32;
 
-    
+
 
     canvas.set_width(wv_width);
     canvas.set_height(wv_height);
@@ -37,6 +76,5 @@ pub fn start() {
     context.set_fill_style(&JsValue::from_str("#ffffff"));
     canvas::draw_text(text, text_x, text_y, context);
 
-    // const vw = Math.max(document.documentElement.clientWidth || 0,  || 0);
-    // const vh = Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0);
+    run(); 
 }
