@@ -1,5 +1,17 @@
 ---
 articles:
+  - title: "How Unix commands works"
+    url: "https://dev.to/____marcell/how-unix-commands-works-4jic"
+    description: "Did you ever wonder how ls, mkdir, cp and the other unix programs work on Linux? well this is a high level exploration"
+    published: "2021-07-29T16:39:09Z"
+  - title: "Fast Fulltext Search With Postgres Gin Index "
+    url: "https://dev.to/____marcell/fast-fulltext-search-with-postgres-gin-index-22n5"
+    description: "fast fulltext search with postgres gin index"
+    published: "2021-06-29T14:11:42Z"
+  - title: "Postgres indexes"
+    url: "https://dev.to/____marcell/postgres-indexes-4603"
+    description: "Postgres indexes"
+    published: "2021-06-21T11:32:10Z"
   - title: "How code spliting works and how to use it"
     url: "https://dev.to/____marcell/how-code-spliting-works-and-how-to-use-it-396n"
     description: "The reason why webpack exists"
